@@ -2,6 +2,7 @@ import * as CalebInput from "./input.js";
 import { assert } from "../../assert.js";
 import * as Operations from "../../state/operations.js"
 import { DO_NOT_USE_FOR_INITIAL_POS_OR_YOU_WILL_BE_FIRED } from "../level/level.js";
+import { recordMovement } from "../../movementStats.js";
 
 /**
  * @param {GameState} state
@@ -126,6 +127,14 @@ function collideLevelChange(state, p) {
 function collideInstagib(state) {
     if (!state.caleb.dead) {
         state.caleb.deadAt = state.now()
+        // Mark current movement as failed
+        const currentMovement = state.caleb.fFtT.type || 
+            (state.caleb.jump.jumping ? (state.caleb.jump.jumpDir === 1 ? "j" : "k") : null) ||
+            (state.caleb.dash.dashing ? (state.caleb.dash.dashDir === 1 ? "w" : "b") : null) ||
+            (state.caleb.portal.portaling ? "%" : null);
+        if (currentMovement) {
+            recordMovement(currentMovement, null, false);
+        }
     }
     state.caleb.dead = true
 }

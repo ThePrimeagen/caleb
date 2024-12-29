@@ -337,5 +337,30 @@ declare global {
         key: string
         repeat: boolean
     }
+
+    // Movement stats types for tracking player actions
+    type MovementStats = {
+        j: number[];  // Jump counts [0...15]
+        k: number[];  // Jump counts [0...15]
+        h: number;    // Hold time
+        l: number;    // Hold time
+        f: LetterStats;  // f movement stats
+        F: LetterStats;  // F movement stats
+        t: LetterStats;  // t movement stats
+        T: LetterStats;  // T movement stats
+        "%": CountStats;  // Portal stats
+        w: CountStats;    // Forward dash stats
+        b: CountStats;    // Backward dash stats
+    }
+
+    type LetterStats = {
+        failed: number;
+        [key: string]: number;  // Pre-allocated letter counts a-z
+    }
+
+    type CountStats = {
+        count: number;
+        failed: number;
+    }
 }
 

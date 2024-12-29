@@ -2,6 +2,7 @@ import * as Input from "../../input/input.js"
 import { ZERO } from "../../math/vector.js";
 import * as Level from "../level/level.js"
 import * as CalebUtils from "./utils.js";
+import { recordMovement } from "../../movementStats.js";
 
 /**
  * @param {-1 | 1} dir
@@ -10,6 +11,7 @@ import * as CalebUtils from "./utils.js";
 function moveWB(dir) {
     return function(state) {
         if (state.caleb.dash.dashing) {
+            recordMovement(dir === 1 ? "w" : "b", null, false);
             return false;
         }
 
@@ -30,9 +32,11 @@ function moveWB(dir) {
         }
 
         if (destination === -1) {
+            recordMovement(dir === 1 ? "w" : "b", null, false);
             return
         }
 
+        recordMovement(dir === 1 ? "w" : "b", null, true);
         resetJumpState(state);
         resetDashState(state);
         resetVel2(state);
@@ -57,6 +61,7 @@ function movePortal(state) {
     const caleb = state.caleb;
     caleb.portal.portaling = true
     caleb.portal.tick = 0
+    recordMovement("%", null, true);
     return true
 }
 
@@ -68,6 +73,7 @@ function moveKJ(dir) {
 
     return function(state) {
         if (state.caleb.jump.noJumpTime > 0) {
+            recordMovement(dir === 1 ? "j" : "k", null, false);
             return false;
         }
 
@@ -81,6 +87,7 @@ function moveKJ(dir) {
         jump.jumping = true;
         jump.jumpDistance = number
         jump.jumpStart = null
+        recordMovement(dir === 1 ? "j" : "k", number, true);
         jump.noJumpTime = (number * opts.noJumpMultiplier) + opts.noJumpBase;
         jump.jumpDir = dir
 
@@ -103,6 +110,7 @@ function moveHL(dir) {
     return function(state) {
         resetVel2(state);
         state.caleb.physics.next.vel.x = state.opts.caleb.normWidthsPerSecond * dir
+        // Track hold time in handleHL
         return true;
     }
 }
@@ -159,6 +167,7 @@ function completefFtT(state) {
     const dash = caleb.dash;
     const input = state.input.inputs[0];
     if (!input) {
+        recordMovement(fFtT.type, null, false);
         return;
     }
 
@@ -180,9 +189,11 @@ function completefFtT(state) {
     }
 
     if (destination === -1) {
+        recordMovement(fFtT.type, null, false);
         return;
     }
 
+    recordMovement(fFtT.type, input.key, true);
     resetJumpState(state);
     resetDashState(state);
     resetVel2(state);
@@ -278,9 +289,19 @@ function handleHL(state) {
         return
     }
 
+    const delta = 1000 / 60; // Assuming 60fps, adjust if needed
     const hInput = Input.get(state.input, "h")
     const lInput = Input.get(state.input, "l")
 
+    // Track hold times
+    if (hInput && hInput.type === "hold") {
+        recordMovement("h", delta);
+    }
+    if (lInput && lInput.type === "hold") {
+        recordMovement("l", delta);
+    }
+
+    // Handle movement
     if (hInput && !lInput) {
         h(state, hInput)
     } else if (!hInput && lInput) {

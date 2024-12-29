@@ -6,6 +6,7 @@ import * as Simulation from "./simulation/state.js";
 import * as State from "./state/state.js";
 import * as Utils from "./utils.js";
 import * as Input from "./input/input.js";
+import { postStats } from "./movementStats.js";
 
 const canvas = /** @type {HTMLCanvasElement} */ (document.getElementById("game_canvas"))
 assert(!!canvas, "expected canvas to exist")
@@ -53,6 +54,9 @@ if (seed > 0) {
 Input.addListenersTo(state, canvas)
 Config.addBrowserListeners(state)
 State.projectStaticObjects(state);
+
+// Set up movement stats posting every minute
+setInterval(postStats, 60000);
 
 const loop = Runner.createGameLoop(state)
 Runner.clear(state)
