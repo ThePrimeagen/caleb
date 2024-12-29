@@ -6,6 +6,10 @@
 
 /** @type {MovementStats} */
 const stats = {
+    // Timing information
+    startTime: Date.now(),
+    duration: 0,
+    
     // Jump counts [0...15] for j and k movements
     j: new Array(16).fill(0),
     k: new Array(16).fill(0),
@@ -81,8 +85,18 @@ export function recordMovement(key, distanceOrLetter = null, success = true) {
  * Post stats to the /stats endpoint
  */
 export function postStats() {
-    // Since there's no endpoint yet, just log to console
-    console.log("Would POST to /stats:", JSON.stringify(stats));
+    // Since there's no endpoint yet, simulate POST request format in console
+    console.log("Would POST to /stats with:", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            ...stats,
+            startTime: stats.startTime,
+            duration: stats.duration
+        })
+    });
 
     // Reset stats after posting
     resetStats();
@@ -93,6 +107,11 @@ export function postStats() {
  * All objects are pre-allocated, just reset their values to 0
  */
 function resetStats() {
+    // Update timing information
+    const now = Date.now();
+    stats.duration = now - stats.startTime;
+    stats.startTime = now;
+
     // Reset jump arrays
     stats.j.fill(0);
     stats.k.fill(0);

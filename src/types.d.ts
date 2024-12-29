@@ -340,17 +340,19 @@ declare global {
 
     // Movement stats types for tracking player actions
     type MovementStats = {
-        j: number[];  // Jump counts [0...15]
-        k: number[];  // Jump counts [0...15]
-        h: number;    // Hold time
-        l: number;    // Hold time
-        f: LetterStats;  // f movement stats
-        F: LetterStats;  // F movement stats
-        t: LetterStats;  // t movement stats
-        T: LetterStats;  // T movement stats
-        "%": CountStats;  // Portal stats
-        w: CountStats;    // Forward dash stats
-        b: CountStats;    // Backward dash stats
+        startTime: number;  // Timestamp when stats collection started
+        duration: number;   // Duration in milliseconds since startTime
+        j: number[];       // Jump counts [0...15]
+        k: number[];       // Jump counts [0...15]
+        h: number;         // Hold time
+        l: number;         // Hold time
+        f: LetterStats;    // f movement stats
+        F: LetterStats;    // F movement stats
+        t: LetterStats;    // t movement stats
+        T: LetterStats;    // T movement stats
+        "%": CountStats;   // Portal stats
+        w: CountStats;     // Forward dash stats
+        b: CountStats;     // Backward dash stats
     }
 
     type LetterStats = {
